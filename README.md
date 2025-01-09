@@ -1,101 +1,98 @@
 # Project Context Generator
 
-This tool generates an XML file containing a structured overview of your project, including its file tree, file contents, and project information. It's particularly useful for documenting project structure, creating project snapshots, or preparing project context for analysis.
+A tool that generates an XML file containing information about your project's structure and contents. This is particularly useful for:
+- Providing project context to Language Models
+- Creating project documentation
+- Sharing project structure with team members
 
 ## Features
 
-- Generates a complete project structure in XML format
-- Configurable file inclusion/exclusion
-- File tree visualization
-- Package.json information extraction
-- Interactive path preview for easy configuration
+- Generates a file tree visualization of your project
+- Creates XML output with selected file contents
+- Configurable via TOML file
+- Preserves your selection of which files to include
+- Handles special characters and XML escaping
 
-## Installation
+## Setup
 
-1. Clone the repository
-2. Install dependencies:
 ```bash
+# Clone the repository
+git clone [your-repo-url]
+
+# Install dependencies
 npm install
 ```
 
 ## Usage
 
+The tool uses a `.project-context.toml` configuration file in your target project directory. If it doesn't exist, it will be created automatically with default settings.
+
 ### Basic Usage
 
 ```bash
-ts-node index.ts <target-directory>
-```
-OR
-```bash
-npm run start <target-directory>
-```
+# Update project context preserving your previous file selections
+npm run start /path/to/your/project
 
-Example:
-```bash
-ts-node index.ts ../marketing-intern
+# Reset project context (all files will be commented out)
+npm run start:reset /path/to/your/project
 ```
-
-### Process
-
-1. The tool will first show a preview of all available paths in your project
-2. Use this preview to configure which files you want to include by updating the `includedPaths` array in the code
-3. Run the tool again to generate the final context file
-4. The output will be saved as `project-context.xml` in your current directory
 
 ### Configuration
 
-The tool uses three main configuration arrays:
+#### Empty included_paths
 
-1. `excludedFromFileTree`: Controls what appears in the file tree visualization
-```typescript
-const excludedFromFileTree = [
-  'node_modules',
-  '.git',
-  'dist',
-  '.nuxt',
-  // ...
-];
+If `included_paths` is an empty array in your config:
+- The file tree will still be generated
+- The project structure will be shown
+- No file contents will be included in the XML output
+
+This is useful when you only want to see the project structure without any file contents.
+
+The `.project-context.toml` file in your project directory controls what gets included in the output:
+
+```toml
+# Files/directories to exclude from tree visualization
+excluded_from_file_tree = [
+  ".nuxt",
+  ".git",
+  ".output",
+  "node_modules"
+]
+
+# Files/directories to completely ignore
+ignored_paths = [
+  ".nuxt",
+  ".output",
+  "yarn.lock",
+  "node_modules",
+  ".git"
+]
+
+# Paths to include in XML content
+included_paths = [
+  # Files commented out won't be included in the XML output
+  # "app.vue",
+  # "components/MyComponent.vue",
+  "types/index.ts"  # This file will be included
+]
 ```
 
-2. `ignoredPaths`: Files and directories to always exclude from processing
-```typescript
-const ignoredPaths = [
-  'node_modules',
-  '.git',
-  'dist',
-  // ...
-];
-```
+### Output
 
-3. `includedPaths`: Specific files and directories to include
-```typescript
-const includedPaths = [
-  'src',              // Include all files in src directory
-  'package.json',          // Include specific files
-  'configs/**/*.ts',       // Include TypeScript files in configs directory
-];
-```
+The tool generates a `project-context.xml` file in your current directory with:
+- Project information from package.json
+- A visual file tree representation
+- Contents of included files (specified in .project-context.toml)
 
-### Path Patterns
-
-For `includedPaths`, you can use different patterns:
-- `'src/**/*'` - Include all files in src directory and subdirectories
-- `'src/*.ts'` - Include all TypeScript files directly in src directory
-- `'package.json'` - Include a specific file
-
-For `ignoredPaths` and `excludedFromFileTree`, just use the directory or file name:
-- `'.nuxt'` - Excludes the .nuxt directory and all its contents
-- `'node_modules'` - Excludes the node_modules directory
-
-## Output
-
-The tool generates a `project-context.xml` file with the following structure:
-
+Example output structure:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <projectContext>
   <projectInfo>
-    <!-- Package.json information -->
+    <name>your-project-name</name>
+    <description>Your project description</description>
+    <version>1.0.0</version>
+    <!-- Dependencies information -->
   </projectInfo>
   <fileTree>
     <!-- Visual representation of project structure -->
@@ -106,23 +103,17 @@ The tool generates a `project-context.xml` file with the following structure:
 </projectContext>
 ```
 
-## Error Handling
-
-- The tool provides warnings for inaccessible files or directories
-- Continues processing even if individual files fail
-- Verifies target directory existence before processing
-- Safely handles missing package.json
-
 ## Tips
 
-1. Start with an empty `includedPaths` array to see all available files
-2. Use the preview to select specific files you want to include
-3. Add common build and temp directories to `ignoredPaths`
-4. Keep `node_modules` and other large directories in `ignoredPaths` for better performance
-5. Use specific patterns in `includedPaths` to include only relevant files
+1. Start with all paths commented out and gradually uncomment the ones you want to include
+2. Use the reset command if you want to start fresh with all paths commented
+3. The tool preserves your uncommented paths when updating, even if new files are added to the project
+4. XML-unsafe characters are automatically escaped in the output
 
-## Limitations
+## Contributing
 
-- Large projects might generate large XML files
-- Binary files are not supported
-- Symbolic links are not followed
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+Apache-2.0
