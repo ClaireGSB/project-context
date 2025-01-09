@@ -12,8 +12,7 @@ ignored_paths = [
   ".output",
   "yarn.lock",
   "node_modules",
-  ".git",
-  "build"
+  ".git"
 ]
 
 # Paths to include in XML content
@@ -24,9 +23,12 @@ included_paths = [
   # ".prettierrc.js",
   # ".project-context.toml",
   # "README.md",
+  # "build/src/index.d.ts",
+  # "build/src/index.js",
+  # "build/src/index.js.map",
+  # "build/tsconfig.tsbuildinfo",
   # "package-lock.json",
   # "package.json",
-  # "project-context.xml",
   # "src/config.ts",
   # "src/index copy.ts",
   # "src/index.ts",

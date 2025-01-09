@@ -15,6 +15,9 @@ const DEFAULT_CONFIG: Omit<ProjectConfig, 'included_paths'> = {
     '.git',
     '.output',
     'node_modules',
+    ".project-context.toml",
+    "build",
+    "dist",
   ],
   ignored_paths: [
     '.nuxt',
@@ -22,6 +25,9 @@ const DEFAULT_CONFIG: Omit<ProjectConfig, 'included_paths'> = {
     'yarn.lock',
     'node_modules',
     '.git',
+    ".project-context.toml",
+    "build",
+    "dist",
   ],
 };
 

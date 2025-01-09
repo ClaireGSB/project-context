@@ -27,14 +27,39 @@ npm install
 
 The tool uses a `.project-context.toml` configuration file in your target project directory. If it doesn't exist, it will be created automatically with default settings.
 
-### Basic Usage
+### Usage
 
+#### Method 1: Using bash/zsh alias (Recommended)
+
+1. Add these aliases to your `~/.bashrc` or `~/.zshrc`:
+```bash
+alias project-context='function _project_context() { npm run --prefix /absolute/path/to/project-context-generator start "$(pwd)"; }; _project_context'
+alias project-context-reset='function _project_context_reset() { npm run --prefix /absolute/path/to/project-context-generator start:reset "$(pwd)"; }; _project_context_reset'
+```
+
+2. Replace `/absolute/path/to/project-context-generator` with the actual path where you installed this tool
+3. Source your rc file (`source ~/.bashrc` or `source ~/.zshrc`) or restart your terminal
+
+Then you can run from any project directory:
+```bash
+project-context         # Update preserving uncommented paths
+project-context-reset   # Reset all paths to commented out
+```
+
+The tool will:
+1. Create `.project-context.toml` in your current directory if it doesn't exist
+2. Generate or update the list of files (commented/uncommented based on existing config)
+3. Create `project-context.xml` in your current directory
+
+#### Method 2: Direct npm usage
+
+If you prefer not using aliases, you can still run:
 ```bash
 # Update project context preserving your previous file selections
-npm run start /path/to/your/project
+npm run --prefix /path/to/project-context-generator start /path/to/your/project
 
 # Reset project context (all files will be commented out)
-npm run start:reset /path/to/your/project
+npm run --prefix /path/to/project-context-generator start:reset /path/to/your/project
 ```
 
 ### Configuration
