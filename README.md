@@ -127,10 +127,9 @@ Example output structure:
 
 ## Tips
 
-1. Start with all paths commented out and gradually uncomment the ones you want to include
-2. Use the reset command if you want to start fresh with all paths commented
-3. The tool preserves your uncommented paths when updating, even if new files are added to the project
-4. XML-unsafe characters are automatically escaped in the output
+1. Use the reset command if you want to start fresh with all paths commented
+2. The tool preserves your uncommented paths when updating, even if new files are added to the project
+3. XML-unsafe characters are automatically escaped in the output
 
 ## Contributing
 
