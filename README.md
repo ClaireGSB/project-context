@@ -1,9 +1,6 @@
 # Project Context Generator
 
-A tool that generates an XML file containing information about your project's structure and contents. This is particularly useful for:
-- Providing project context to Language Models
-- Creating project documentation
-- Sharing project structure with team members
+A tool that generates an XML file containing information about your project's structure and contents. This is useful for providing  context to LLMs.
 
 ## Features
 
