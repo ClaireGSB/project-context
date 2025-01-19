@@ -1,0 +1,36 @@
+# Files/directories to exclude from tree visualization
+excluded_from_file_tree = [
+  ".nuxt",
+  ".git",
+  ".output",
+  "node_modules"
+]
+
+# Files/directories to completely ignore
+ignored_paths = [
+  ".nuxt",
+  ".output",
+  "yarn.lock",
+  "node_modules",
+  ".git"
+]
+
+# Paths to include in XML content
+included_paths = [
+  # ".editorconfig",
+  # ".eslintignore",
+  # ".eslintrc.json",
+  # ".prettierrc.js",
+  # ".project-context.toml",
+  # "README.md",
+  # "build/src/index.d.ts",
+  # "build/src/index.js",
+  # "build/src/index.js.map",
+  # "build/tsconfig.tsbuildinfo",
+  # "package-lock.json",
+  # "package.json",
+  # "src/config.ts",
+  # "src/index copy.ts",
+  # "src/index.ts",
+  # "tsconfig.json"
+]
