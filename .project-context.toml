@@ -3,7 +3,9 @@ excluded_from_file_tree = [
   ".nuxt",
   ".git",
   ".output",
-  "node_modules"
+  "node_modules",
+  "build",
+  "project-context.xml"
 ]
 
 # Files/directories to completely ignore
@@ -12,7 +14,11 @@ ignored_paths = [
   ".output",
   "yarn.lock",
   "node_modules",
-  ".git"
+  ".git",
+  "build",
+  "dist",
+  "package-lock.json",
+  "project-context.xml"
 ]
 
 # Paths to include in XML content
@@ -22,15 +28,9 @@ included_paths = [
   # ".eslintrc.json",
   # ".prettierrc.js",
   # ".project-context.toml",
-  # "README.md",
-  # "build/src/index.d.ts",
-  # "build/src/index.js",
-  # "build/src/index.js.map",
-  # "build/tsconfig.tsbuildinfo",
-  # "package-lock.json",
-  # "package.json",
-  # "src/config.ts",
-  # "src/index copy.ts",
-  # "src/index.ts",
-  # "tsconfig.json"
+  "README.md",
+  "package.json",
+  "src/config.ts",
+  "src/index.ts",
+  "tsconfig.json"
 ]
