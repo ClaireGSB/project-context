@@ -7,4 +7,4 @@
 - Use meaningful variable and function names
 - ALWAYS run type checking before declaring a task done (npx tsc --noEmit)
 
-- ALWAYS read PLAN.md before starting a ta
+- ALWAYS read PLAN.md before starting a task
