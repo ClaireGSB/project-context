@@ -51,7 +51,7 @@ function getAllAvailablePaths(dir: string, config: { ignored_paths: string[] }):
           if (stats.isDirectory()) {
             traverse(fullPath);
           } else {
-            paths.add(relativePath);
+            paths.add(normalizePath(relativePath));
           }
         } catch (err) {
           console.warn(`Warning: Unable to access ${fullPath}: ${err instanceof Error ? err.message : String(err)}`);
