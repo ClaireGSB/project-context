@@ -23,12 +23,16 @@ ignored_paths = [
 
 # Paths to include in XML content
 included_paths = [
+  # ".claude/commands/nextSteps.md",
+  # ".claude/settings.local.json",
   # ".editorconfig",
   # ".eslintignore",
   # ".eslintrc.json",
   # ".prettierrc.js",
   # ".project-context.toml",
+  # "PLAN.md",
   "README.md",
+  # "claude.md",
   "package.json",
   "src/config.ts",
   "src/index.ts",
