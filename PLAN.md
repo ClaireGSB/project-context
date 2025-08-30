@@ -18,7 +18,7 @@ The new behavior will ensure that all paths are generated and compared using the
 
 - [x] Create a path normalization utility function.
 - [x] Update path generation logic in `src/index.ts` to use the new utility.
-- [ ] Update path comparison logic in `src/config.ts` to ensure consistency.
+- [x] Update path comparison logic in `src/config.ts` to ensure consistency.
 - [ ] Verify that paths used for reading file contents in `src/index.ts` are correctly resolved.
 
 ### **Detailed Implementation Steps**
