@@ -3,6 +3,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ensureConfigExists, updateIncludedPaths, readConfig } from './config';
 
+function normalizePath(p: string): string {
+  return path.normalize(p);
+}
+
 // Get command line arguments
 const args = process.argv.slice(2);
 const reset = args[0] === 'reset';
@@ -47,7 +51,7 @@ function getAllAvailablePaths(dir: string, config: { ignored_paths: string[] }):
           if (stats.isDirectory()) {
             traverse(fullPath);
           } else {
-            paths.add(relativePath);
+            paths.add(normalizePath(relativePath));
           }
         } catch (err) {
           console.warn(`Warning: Unable to access ${fullPath}: ${err instanceof Error ? err.message : String(err)}`);
@@ -137,7 +141,7 @@ function getFileContents(config: { included_paths: string[] }): string {
   let result = '';
   
   for (const includedPath of config.included_paths) {
-    const filePath = path.join(absoluteTargetDir, includedPath);
+    const filePath = path.join(absoluteTargetDir, normalizePath(includedPath));
     
     try {
       if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {

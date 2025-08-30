@@ -70,8 +70,8 @@ export function updateIncludedPaths(configPath: string, newPaths: string[], rese
     return;
   }
 
-  // Get currently uncommented paths
-  const uncommentedPaths = new Set(config.included_paths || []);
+  // Get currently uncommented paths and normalize them for comparison
+  const uncommentedPaths = new Set((config.included_paths || []).map(p => path.normalize(p)));
 
   // Update included_paths section
   const configContent = fs.readFileSync(configPath, 'utf-8');
@@ -91,10 +91,11 @@ export function updateIncludedPaths(configPath: string, newPaths: string[], rese
     return;
   }
 
-  // Generate new paths
+  // Generate new paths (ensure they are also normalized, though they should be from getAllAvailablePaths)
   const newPathLines = newPaths.map((p, idx) => {
-    const shouldComment = reset || !uncommentedPaths.has(p);
-    const line = `  ${shouldComment ? '# ' : ''}"${p}"`;
+    const normalizedP = path.normalize(p);
+    const shouldComment = reset || !uncommentedPaths.has(normalizedP);
+    const line = `  ${shouldComment ? '# ' : ''}"${p.replace(/\\/g, '\\\\')}"`; // Escape backslashes for TOML string
     return line + (idx < newPaths.length - 1 ? ',' : '');
   });
 
