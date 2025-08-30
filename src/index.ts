@@ -3,6 +3,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ensureConfigExists, updateIncludedPaths, readConfig } from './config';
 
+function normalizePath(p: string): string {
+  return path.normalize(p);
+}
+
 // Get command line arguments
 const args = process.argv.slice(2);
 const reset = args[0] === 'reset';
