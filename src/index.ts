@@ -141,7 +141,7 @@ function getFileContents(config: { included_paths: string[] }): string {
   let result = '';
   
   for (const includedPath of config.included_paths) {
-    const filePath = path.join(absoluteTargetDir, includedPath);
+    const filePath = path.join(absoluteTargetDir, normalizePath(includedPath));
     
     try {
       if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
