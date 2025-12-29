@@ -1,3 +1,9 @@
+# Gitignore integration
+use_gitignore = true
+gitignore_paths = [
+  ".gitignore"
+]
+
 # Files/directories to exclude from tree visualization
 excluded_from_file_tree = [
   ".nuxt",
@@ -8,7 +14,7 @@ excluded_from_file_tree = [
   "project-context.xml"
 ]
 
-# Files/directories to completely ignore
+# Paths to skip for file contents (still shown in tree)
 ignored_paths = [
   ".nuxt",
   ".output",
