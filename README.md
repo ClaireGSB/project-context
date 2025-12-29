@@ -70,9 +70,19 @@ If `included_paths` is an empty array in your config:
 
 This is useful when you only want to see the project structure without any file contents.
 
-The `.project-context.toml` file in your project directory controls what gets included in the output:
+The `.project-context.toml` file in your project directory controls what gets included in the output.
+By default, `.gitignore` patterns are merged into `ignored_paths` on update. Disable this with `use_gitignore = false`,
+or point to other files via `gitignore_paths`. Both `excluded_from_file_tree` and `ignored_paths` accept
+gitignore-style patterns (e.g. `*.pyc`, `**/node_modules`, `/dist`).
+Use `excluded_from_file_tree` to hide entries from the tree; `ignored_paths` only affects `included_paths` and file contents.
 
 ```toml
+# Gitignore integration
+use_gitignore = true
+gitignore_paths = [
+  ".gitignore"
+]
+
 # Files/directories to exclude from tree visualization
 excluded_from_file_tree = [
   ".nuxt",
@@ -81,7 +91,7 @@ excluded_from_file_tree = [
   "node_modules"
 ]
 
-# Files/directories to completely ignore
+# Paths to skip for file contents (still shown in tree)
 ignored_paths = [
   ".nuxt",
   ".output",

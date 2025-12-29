@@ -1,10 +1,50 @@
 // src/index.ts
 import * as fs from 'fs';
 import * as path from 'path';
-import { ensureConfigExists, updateIncludedPaths, readConfig } from './config';
+import type { Ignore, Options } from 'ignore';
+import {
+  ensureConfigExists,
+  updateIncludedPaths,
+  readConfig,
+  readGitignorePatterns,
+  mergeGitignoreIntoIgnoredPaths,
+} from './config';
 
 function normalizePath(p: string): string {
   return path.normalize(p);
+}
+
+type IgnoreMatcher = (relativePath: string, isDir: boolean) => boolean;
+
+const ignore = require('ignore') as (options?: Options) => Ignore;
+
+function toPosixPath(p: string): string {
+  return p.replace(/\\/g, '/');
+}
+
+function createIgnoreMatcher(patterns: string[]): IgnoreMatcher {
+  const normalizedPatterns = patterns
+    .map(pattern => pattern.replace(/\\/g, '/'))
+    .filter(pattern => pattern.trim() !== '');
+
+  if (normalizedPatterns.length === 0) {
+    return () => false;
+  }
+
+  const matcher = ignore().add(normalizedPatterns);
+
+  return (relativePath: string, isDir: boolean) => {
+    const posixPath = toPosixPath(relativePath);
+    if (posixPath === '' || posixPath === '.') {
+      return false;
+    }
+
+    if (isDir) {
+      return matcher.ignores(`${posixPath}/`) || matcher.ignores(posixPath);
+    }
+
+    return matcher.ignores(posixPath);
+  };
 }
 
 // Get command line arguments
@@ -29,6 +69,7 @@ function escapeXml(unsafe: string): string {
 
 function getAllAvailablePaths(dir: string, config: { ignored_paths: string[] }): string[] {
   const paths = new Set<string>();
+  const shouldIgnore = createIgnoreMatcher(config.ignored_paths);
   
   function traverse(currentDir: string) {
     try {
@@ -41,14 +82,15 @@ function getAllAvailablePaths(dir: string, config: { ignored_paths: string[] }):
       for (const file of files) {
         const fullPath = path.join(currentDir, file);
         const relativePath = path.relative(absoluteTargetDir, fullPath);
-
-        if (config.ignored_paths.some(ignorePath => relativePath.startsWith(ignorePath))) {
-          continue;
-        }
-
         try {
           const stats = fs.statSync(fullPath);
-          if (stats.isDirectory()) {
+          const isDir = stats.isDirectory();
+
+          if (shouldIgnore(relativePath, isDir)) {
+            continue;
+          }
+
+          if (isDir) {
             traverse(fullPath);
           } else {
             paths.add(normalizePath(relativePath));
@@ -100,7 +142,11 @@ function getProjectInfo(targetDir: string): string {
   }
 }
 
-function generateFileTree(dir: string, config: { excluded_from_file_tree: string[] }, prefix: string = ''): string {
+function generateFileTree(
+  dir: string,
+  shouldExclude: IgnoreMatcher,
+  prefix: string = ''
+): string {
   let result = '';
   try {
     if (!fs.existsSync(dir)) {
@@ -113,17 +159,18 @@ function generateFileTree(dir: string, config: { excluded_from_file_tree: string
       const filePath = path.join(dir, file);
       const relativePath = path.relative(absoluteTargetDir, filePath);
 
-      if (config.excluded_from_file_tree.some(excludedPath => relativePath.startsWith(excludedPath))) {
-        return;
-      }
-
       try {
         const stats = fs.statSync(filePath);
         const isLast = index === files.length - 1;
+        const isDir = stats.isDirectory();
+
+        if (shouldExclude(relativePath, isDir)) {
+          return;
+        }
         
-        if (stats.isDirectory()) {
+        if (isDir) {
           result += `${prefix}${isLast ? '└── ' : '├── '}${file}/\n`;
-          result += generateFileTree(filePath, config, `${prefix}${isLast ? '    ' : '│   '}`);
+          result += generateFileTree(filePath, shouldExclude, `${prefix}${isLast ? '    ' : '│   '}`);
         } else {
           result += `${prefix}${isLast ? '└── ' : '├── '}${file}\n`;
         }
@@ -163,12 +210,13 @@ function getFileContents(config: { included_paths: string[] }): string {
 }
 
 function generateProjectContext(config: { excluded_from_file_tree: string[], included_paths: string[] }): void {
+  const shouldExclude = createIgnoreMatcher(config.excluded_from_file_tree);
   const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <projectContext>
   ${getProjectInfo(absoluteTargetDir)}
   <fileTree>
     <![CDATA[
-${generateFileTree(absoluteTargetDir, config)}
+${generateFileTree(absoluteTargetDir, shouldExclude)}
     ]]>
   </fileTree>
   <fileContents>
@@ -190,7 +238,17 @@ if (!fs.existsSync(absoluteTargetDir)) {
 
 // Get or create config file
 const configPath = ensureConfigExists(targetDir, []);
-const config = readConfig(configPath);
+let config = readConfig(configPath);
+
+if (config.use_gitignore) {
+  const gitignorePatterns = readGitignorePatterns(absoluteTargetDir, config.gitignore_paths);
+  if (gitignorePatterns.length > 0) {
+    const updated = mergeGitignoreIntoIgnoredPaths(configPath, gitignorePatterns);
+    if (updated) {
+      config = readConfig(configPath);
+    }
+  }
+}
 
 // Get all available paths
 const allPaths = getAllAvailablePaths(absoluteTargetDir, config);
